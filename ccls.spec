@@ -1,5 +1,5 @@
 Name:           ccls
-Version:        0.20220729
+Version:        0.20240202
 Release:        %autorelease
 Summary:        C/C++/ObjC language server supporting cross references, hierarchies, completion and semantic highlighting
 Group:          Development Tools
@@ -7,8 +7,6 @@ Group:          Development Tools
 License:        Apache-2.0 AND CC0-1.0 AND BSL-1.0
 URL:            https://github.com/MaskRay/ccls
 Source0:        %{URL}/archive/%{version}/%{name}-%{version}.tar.gz
-Patch0:         %{URL}/commit/6dc564f2a8608fff778a7d7e8ed0d5acd8d61e6b.patch#/llvm16-optional-deprecation.patch
-Patch1:         %{URL}/commit/ba38e13b93de1e8787b7e8a22b9a00d35b2b40f2.patch#/llvm17-precompiled-preamble-build.patch
 
 BuildRequires:  cmake >= 3.8
 BuildRequires:  clang-devel >= 7.0
@@ -51,12 +49,5 @@ rm -rf third_party/rapidjson
 
 
 %changelog
-* Mon Nov  20 2023 Alex Fan <alex.fan.q@gmail.com>
-- Update to ccls 0.20220729
-- Backport upstream patch llvm17-precompiled-preamble-build.patch
-  to fix build with LLVM 17
-- Backport upstream patch llvm16-optional-deprecation.patch to fix
-  build with LLVM 16.
-
-* Mon Nov  12 2018 Yotam Nachum <fedora@yotam.net>
-- Initial Fedora package
+* Wed Jun  12 2024 Alex Fan <alex.fan.q@gmail.com>
+- Update to ccls 0.20240202
