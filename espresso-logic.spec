@@ -5,7 +5,7 @@
 
 Name:           espresso-logic
 Version:        2.3
-Release:        .git%{sshort0}%{?dist}
+Release:        git%{sshort0}%{?dist}
 Summary:        The espresso PLA logic minimization program made C++20 Windows 10 compatible
 Group:          Development Tools
 
@@ -26,6 +26,8 @@ git clone --depth 1 -n -b %{branch0} %{source0} .
 git fetch --depth 1 origin %{schash0}
 git reset --hard %{schash0}
 git log --format=fuller
+
+%patch0 -p0 -b .hash~
 
 %build
 %make_build -C ./src
