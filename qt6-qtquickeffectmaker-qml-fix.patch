@@ -1,0 +1,12 @@
+diff --git a/tools/qqem/qml/CustomDialog.qml b/tools/qqem/qml/CustomDialog.qml
+index a5449f9..b1c8a5c 100644
+--- a/tools/qqem/qml/CustomDialog.qml
++++ b/tools/qqem/qml/CustomDialog.qml
+@@ -3,6 +3,7 @@
+ 
+ import QtQuick
+ import QtQuick.Controls
++import QtQuick.Controls.Material
+ 
+ Dialog {
+     id: rootItem
