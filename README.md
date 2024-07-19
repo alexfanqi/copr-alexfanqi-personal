@@ -6,3 +6,4 @@ currently include:
 - ccls <https://github.com/MaskRay/ccls>
 - qt6-qtquickeffectmaker
 - espresso-logic <https://github.com/Gigantua/Espresso>
+- bluespec <https://github.com/B-Lang-org/bsc>
