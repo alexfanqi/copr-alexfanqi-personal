@@ -9,7 +9,7 @@
 
 Summary: Qt6 - Quick EffectMaker Tool 
 Name:    qt6-%{qt_module}
-Version: 6.7.1
+Version: 6.7.2
 Release: 2%{?dist}
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
@@ -24,7 +24,7 @@ Source0: https://download.qt.io/development_releases/qt/%{majmin}/%{qt_version}/
 %else
 Source0: https://download.qt.io/official_releases/qt/%{majmin}/%{version}/submodules/%{qt_module}-everywhere-src-%{version}.tar.xz
 %endif
-Patch0:  https://gist.github.com/alexfanqi/3a8c3f8715a85b61dd0687ff4f068071/raw/8b4b21959288c32ef08fdfffa22072085f2f70bf/qt6-qtquickeffectmaker-qml-fix.patch
+Patch0:  https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/qt6-qtquickeffectmaker-qml-fix.patch
 
 BuildRequires: cmake
 BuildRequires: gcc-c++
@@ -94,6 +94,9 @@ popd
 
 
 %changelog
+* Wed Jul 10 2024 Alex Fan <alex.fan.q@gmail.com> - 6.7.2-2
+- bump to 6.7.2
+
 * Mon Jun 17 2024 Alex Fan <alex.fan.q@gmail.com> - 6.7.1-2
 - fix qml import
 
