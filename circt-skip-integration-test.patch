@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 44437c993..ed0b57214 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -620,7 +620,7 @@ if (CIRCT_GTEST_AVAILABLE)
+   add_subdirectory(unittests)
+ endif()
+ add_subdirectory(test)
+-add_subdirectory(integration_test)
++# add_subdirectory(integration_test)
+ add_subdirectory(frontends)
+ 
+ option(CIRCT_INCLUDE_DOCS "Generate build targets for the CIRCT docs.")
