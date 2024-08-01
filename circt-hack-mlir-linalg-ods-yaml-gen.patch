@@ -1,0 +1,15 @@
+diff --git a/llvm/mlir/tools/mlir-linalg-ods-gen/CMakeLists.txt b/llvm/mlir/tools/mlir-linalg-ods-gen/CMakeLists.txt
+index ef5ce8882ec7..a1175aced0de 100644
+--- a/llvm/mlir/tools/mlir-linalg-ods-gen/CMakeLists.txt
++++ b/llvm/mlir/tools/mlir-linalg-ods-gen/CMakeLists.txt
+@@ -14,7 +14,10 @@ target_link_libraries(mlir-linalg-ods-yaml-gen PRIVATE
+   MLIRParser
+   )
+ 
++set(LLVM_USE_HOST_TOOLS_OLD ${LLVM_USE_HOST_TOOLS})
++set(LLVM_USE_HOST_TOOLS OFF)
+ setup_host_tool(mlir-linalg-ods-yaml-gen MLIR_LINALG_ODS_YAML_GEN MLIR_LINALG_ODS_YAML_GEN_EXE MLIR_LINALG_ODS_YAML_GEN_TARGET)
++set(LLVM_USE_HOST_TOOLS ${LLVM_USE_HOST_TOOLS_OLD})
+ 
+ if(NOT ${MLIR_LINALG_ODS_YAML_GEN_EXE} STREQUAL "mlir-linalg-ods-yaml-gen")
+   add_custom_target(mlir-linalg-ods-yaml-gen-host DEPENDS ${MLIR_LINALG_ODS_YAML_GEN_EXE})
