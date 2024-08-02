@@ -1,3 +1,6 @@
+# work around mlir-cpu-runner no such target
+# get rid of integration test all together
+
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 44437c993..ed0b57214 100644
 --- a/CMakeLists.txt
