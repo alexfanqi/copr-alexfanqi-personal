@@ -7,3 +7,4 @@ currently include:
 - qt6-qtquickeffectmaker
 - espresso-logic <https://github.com/Gigantua/Espresso>
 - bluespec <https://github.com/B-Lang-org/bsc>
+- circt <https://github.com/llvm/circt>
