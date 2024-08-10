@@ -160,7 +160,7 @@ popd
 
 %changelog
 * Tue Jul 30 2024 Alex Fan <alex.fan.q@gmail.com>
-- bump to tag firtool 1.67.0
+- bump to tag firtool 1.65.0
 - migrate to unified build
 - enable building python binding, still broken
 * Wed Jul 12 2023 Balint Cristian <cristian.balint@gmail.com>
