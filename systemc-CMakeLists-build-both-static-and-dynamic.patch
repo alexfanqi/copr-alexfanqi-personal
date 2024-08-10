@@ -1,0 +1,48 @@
+From e43896ab7a1be57c0cfdc77caa35479eebfeecb2 Mon Sep 17 00:00:00 2001
+From: Roy Spliet <nouveau@spliet.org>
+Date: Sun, 28 Apr 2024 15:33:01 +0100
+Subject: [PATCH] CMakeLists: build both static and dynamic
+
+Signed-off-by: Roy Spliet <nouveau@spliet.org>
+---
+ src/CMakeLists.txt | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 7433052d8..ec8178f3a 100755
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -121,6 +121,7 @@ function(add_systemc_library libName scBuildDefine)
+         LINKER_LANGUAGE CXX
+         VERSION ${SystemCLanguage_VERSION}
+         SOVERSION ${SystemCLanguage_SOVERSION}
++        OUTPUT_NAME systemc
+         INSTALL_NAME_DIR ${CMAKE_INSTALL_FULL_LIBDIR})
+ 
+ endfunction(add_systemc_library)
+@@ -484,14 +485,20 @@ if (BUILD_SHARED_LIBS AND (WIN32 OR CYGWIN))
+     set(SYSTEMC_TARGETS systemc ${SYSTEMC_DLL_TARGET})
+ 
+ else(BUILD_SHARED_LIBS AND (WIN32 OR CYGWIN))
+-
+     add_systemc_library(systemc
++            SC_BUILD
++            STATIC
++            ${SYSTEMC_CORE_SRC}
++            ${SYSTEMC_SC_MAIN_SRC}
++            )
++
++    add_systemc_library(systemc_shared
+             SC_BUILD
+             ${SYSTEMC_CORE_SRC}
+             ${SYSTEMC_SC_MAIN_SRC}
+             )
+ 
+-    set(SYSTEMC_TARGETS systemc)
++    set(SYSTEMC_TARGETS systemc systemc_shared)
+ 
+ endif(BUILD_SHARED_LIBS AND (WIN32 OR CYGWIN))
+ 
+-- 
+2.44.0
+

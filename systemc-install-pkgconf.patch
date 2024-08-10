@@ -1,0 +1,66 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index c6b73fcde..1a38d72fd 100755
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -524,3 +524,12 @@ install (DIRECTORY ./
+          DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+          COMPONENT dev
+          FILES_MATCHING PATTERN "*.hpp")
++
++configure_file("${CMAKE_CURRENT_SOURCE_DIR}/systemc.pc.in"
++	       "${CMAKE_CURRENT_BINARY_DIR}/systemc.pc" @ONLY)
++install(FILES "${CMAKE_CURRENT_BINARY_DIR}/systemc.pc"
++	DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig/")
++configure_file("${CMAKE_CURRENT_SOURCE_DIR}/tlm.pc.in"
++	       "${CMAKE_CURRENT_BINARY_DIR}/tlm.pc" @ONLY)
++install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tlm.pc"
++	DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig/")
+diff --git a/src/systemc.pc.in b/src/systemc.pc.in
+index 63d2e3cb7..4721f0123 100644
+--- a/src/systemc.pc.in
++++ b/src/systemc.pc.in
+@@ -26,16 +26,15 @@
+ #
+ # -------------------------------------------------------------------------
+ #
+-TARGET_ARCH=@TARGET_ARCH@
+-prefix=@prefix@
+-exec_prefix=@exec_prefix@
+-libarchdir=@libdir@@LIB_ARCH_SUFFIX@
+-includedir=@includedir@
++prefix=@CMAKE_INSTALL_PREFIX@
++exec_prefix=${prefix}
++libarchdir=@CMAKE_INSTALL_LIBDIR@
++includedir=@CMAKE_INSTALL_INCLUDEDIR@
+ 
+-Name: @PACKAGE_NAME@
+-Description: Accellera @PACKAGE_NAME@ proof-of-concept library
+-Version: @PACKAGE_VERSION@
+-URL: @PACKAGE_URL@
+-Libs: -L${libarchdir} -l@PACKAGE@
+-Libs.private: @PKGCONFIG_LDPRIV@
+-Cflags: @PKGCONFIG_CFLAGS@ @PKGCONFIG_DEFINES@ -I${includedir}
++Name: @PROJECT_NAME@
++Description: Accellera @PROJECT_NAME@ proof-of-concept library
++Version: @SystemCLanguage_VERSION@
++URL: http://accellera.org/
++Libs: -L${libarchdir} -lsystemc
++Libs.private:
++Cflags: -I${includedir}
+diff --git a/src/tlm.pc.in b/src/tlm.pc.in
+index 2d3e55c7a..e555879ca 100644
+--- a/src/tlm.pc.in
++++ b/src/tlm.pc.in
+@@ -26,9 +26,9 @@
+ #
+ # -------------------------------------------------------------------------
+ #
+-prefix=@prefix@
+-exec_prefix=@exec_prefix@
+-includedir=@includedir@
++prefix=@CMAKE_INSTALL_PREFIX@
++exec_prefix=${prefix}
++includedir=@CMAKE_INSTALL_INCLUDEDIR@
+ 
+ Name: TLM-2.0
+ Description: Accellera TLM-2.0 proof-of-concept library
