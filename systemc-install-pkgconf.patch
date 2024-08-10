@@ -1,3 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b19df26f3..493407ade 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -242,6 +242,7 @@ if (TLM_IS_PRERELEASE)
+ endif (TLM_IS_PRERELEASE)
+ set (SystemCTLM_SOVERSION "${SystemCTLM_VERSION_MAJOR}.${SystemCTLM_VERSION_MINOR}")
+ 
++set (TLM_PACKAGE_VERSION 2.0.6)
+ 
+ ###############################################################################
+ # Build options
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
 index c6b73fcde..1a38d72fd 100755
 --- a/src/CMakeLists.txt
@@ -16,7 +28,7 @@ index c6b73fcde..1a38d72fd 100755
 +install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tlm.pc"
 +	DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig/")
 diff --git a/src/systemc.pc.in b/src/systemc.pc.in
-index 63d2e3cb7..4721f0123 100644
+index 63d2e3cb7..754c8ff2c 100644
 --- a/src/systemc.pc.in
 +++ b/src/systemc.pc.in
 @@ -26,16 +26,15 @@
@@ -30,8 +42,8 @@ index 63d2e3cb7..4721f0123 100644
 -includedir=@includedir@
 +prefix=@CMAKE_INSTALL_PREFIX@
 +exec_prefix=${prefix}
-+libarchdir=@CMAKE_INSTALL_LIBDIR@
-+includedir=@CMAKE_INSTALL_INCLUDEDIR@
++libarchdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
++includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
  
 -Name: @PACKAGE_NAME@
 -Description: Accellera @PACKAGE_NAME@ proof-of-concept library
@@ -48,10 +60,10 @@ index 63d2e3cb7..4721f0123 100644
 +Libs.private:
 +Cflags: -I${includedir}
 diff --git a/src/tlm.pc.in b/src/tlm.pc.in
-index 2d3e55c7a..e555879ca 100644
+index 2d3e55c7a..675c5906c 100644
 --- a/src/tlm.pc.in
 +++ b/src/tlm.pc.in
-@@ -26,9 +26,9 @@
+@@ -26,13 +26,14 @@
  #
  # -------------------------------------------------------------------------
  #
@@ -60,7 +72,13 @@ index 2d3e55c7a..e555879ca 100644
 -includedir=@includedir@
 +prefix=@CMAKE_INSTALL_PREFIX@
 +exec_prefix=${prefix}
-+includedir=@CMAKE_INSTALL_INCLUDEDIR@
++includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
  
  Name: TLM-2.0
  Description: Accellera TLM-2.0 proof-of-concept library
+ Version: @TLM_PACKAGE_VERSION@
+-URL: @PACKAGE_URL@
++URL: http://accellera.org/
+ Requires: systemc >= 2.1.v1
+ Cflags: -I${includedir}
++
