@@ -8,6 +8,7 @@ Summary:        Universal Verification Methodology (UVM) for SystemC
 License:        Apache-2.0
 URL:            https://systemc.org/overview/uvm-systemc-faq/
 Source0:        https://www.accellera.org/images/downloads/drafts-review/%{name}-%{src_version}.tar.gz
+Patch0:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/uvm-systemc-aarch64.patch
 BuildRequires:  systemc-devel >= 2.3
 BuildRequires:  gcc-c++
 BuildRequires:  make
@@ -24,12 +25,14 @@ in a SystemC-based environment.
 %package devel
 Summary:        Development files for uvm-systemc
 Requires:       uvm-systemc = %{version}-%{release}
+Requires:       systemc-devel >= 2.3
 
 %description devel
 Development files for uvm-systemc
 
 %prep
 %setup -q -n %{name}-%{src_version}
+%patch0 -p1
 
 %build
 ./configure --prefix=%{_prefix} --libdir=%{_libdir} --includedir=%{_includedir}/uvm-systemc --with-arch-suffix=no --with-systemc=%{_prefix}

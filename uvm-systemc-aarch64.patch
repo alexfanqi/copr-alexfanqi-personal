@@ -1,0 +1,15 @@
+diff --git a/configure.ac b/configure.ac
+index cfca222..2788cf8 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -145,6 +145,10 @@ case "$target" in
+                 TARGET_ARCH="linux64"
+                 CPU_ARCH=64
+                 ;;
++            aarch64)
++                TARGET_ARCH="linux64"
++                CPU_ARCH=64
++                ;;
+             i*86)
+                 TARGET_ARCH="linux"
+                 CPU_ARCH=32
