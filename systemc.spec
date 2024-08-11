@@ -1,6 +1,6 @@
 Name:           systemc
 Version:        3.0.0
-Release:        1%{?dist}
+Release:        %autorelease
 Summary:        SystemC is a set of C++ classes and macros which provide an event-driven simulation interface
 
 License:        ASL 2.0 
@@ -21,6 +21,7 @@ functional verification, and high-level synthesis.
 
 %package devel
 Summary:        systemc-devel contains SystemC headers and a statically linkable library.
+Requires:       systemc = %{version}-%{release}
 
 %description devel
 SystemC addresses the need for a system design and verification language that spans hardware 
