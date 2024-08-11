@@ -32,14 +32,14 @@ Development files for uvm-systemc
 
 %prep
 %setup -q -n %{name}-%{src_version}
-%patch0 -p1
+%patch -P 0 -p1
 
 %build
 ./configure --prefix=%{_prefix} --libdir=%{_libdir} --includedir=%{_includedir}/uvm-systemc --with-arch-suffix=no --with-systemc=%{_prefix}
-make %{?_smp_mflags}
+%make_build
 
 %install
-make install DESTDIR=%{buildroot}
+%make_install
 
 %files
 %license %{_prefix}/LICENSE
@@ -51,7 +51,7 @@ make install DESTDIR=%{buildroot}
 %files devel
 %{_libdir}/*.a
 %{_includedir}/uvm-systemc
-%{_datadir}/pkgconfig/*.pc
+%{_libdir}/pkgconfig/*.pc
 
 %changelog
 * Sat Aug 10 2024 Alex Fan <alex.fan.q@gmail.com> - 1.0-beta6-1
