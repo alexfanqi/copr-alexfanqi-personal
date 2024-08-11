@@ -8,3 +8,5 @@ currently include:
 - espresso-logic <https://github.com/Gigantua/Espresso>
 - bluespec <https://github.com/B-Lang-org/bsc>
 - circt <https://github.com/llvm/circt>
+- systemc <https://www.accellera.org/downloads/standards/systemc>
+- uvm-systemc <https://systemc.org/overview/uvm-systemc-faq>
