@@ -1,5 +1,5 @@
 Name:           ccls
-Version:        0.20240202
+Version:        0.20241108
 Release:        %autorelease
 Summary:        C/C++/ObjC language server supporting cross references, hierarchies, completion and semantic highlighting
 Group:          Development Tools
@@ -49,5 +49,8 @@ rm -rf third_party/rapidjson
 
 
 %changelog
-* Wed Jun  12 2024 Alex Fan <alex.fan.q@gmail.com>
+* Thu Mar 06 2025 Alex Fan <alex.fan.q@gmail.com> - 0.20241108-1
+- Update to ccls 0.20241108
+
+* Wed Jun 12 2024 Alex Fan <alex.fan.q@gmail.com>
 - Update to ccls 0.20240202
