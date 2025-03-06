@@ -9,15 +9,15 @@
 
 Summary: Qt6 - Quick EffectMaker Tool 
 Name:    qt6-%{qt_module}
-Version: 6.7.2
-Release: 2%{?dist}
+Version: 6.8.2
+Release: %autorelease
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
 # See also http://doc.qt.io/qt-5/licensing.html
 License: GPLv3 with exceptions
 Url:     http://www.qt.io
 %global majmin %(echo %{version} | cut -d. -f1-2)
-%global  qt_version %(echo %{version} | cut -d~ -f1)
+%global qt_version %(echo %{version} | cut -d~ -f1)
 
 %if 0%{?unstable}
 Source0: https://download.qt.io/development_releases/qt/%{majmin}/%{qt_version}/submodules/%{qt_module}-everywhere-src-%{qt_version}-%{prerelease}.tar.xz
@@ -83,6 +83,7 @@ popd
 
 %files
 %license LICENSES/*
+%{_qt6_archdatadir}/sbom/qqeffectmaker-%{qt_version}.spdx
 %{_bindir}/qqem-qt6
 %{_qt6_bindir}/qqem
 %{_qt6_qmldir}/QtQuickEffectMaker/
@@ -94,6 +95,10 @@ popd
 
 
 %changelog
+* Thu Mar 06 2025 Alex Fan <alex.fan.q@gmail.com> - 6.8.2-1
+- 6.8.2
+- migrate to SPDX license
+
 * Wed Jul 10 2024 Alex Fan <alex.fan.q@gmail.com> - 6.7.2-2
 - bump to 6.7.2
 
