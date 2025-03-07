@@ -12,7 +12,7 @@
 #
 
 Name:           %{pkg_name}
-Version:        2024.01
+Version:        2024.07
 Release:        %autorelease
 Summary:        Compiler, simulator, and tools for the Bluespec Hardware Description Language
 
@@ -130,5 +130,8 @@ cp -r util/vim/{ftdetect,indent,syntax} %{buildroot}%{vimfiles_root}
 
 
 %changelog
+* Thu Mar 07 2025 Alex Fan <alex.fan.q@gmail.com> - 2024.07
+- bump to 2024.07
+
 * Thu Jul 18 2024 Alex Fan <alex.fan.q@gmail.com> - 2024.01
 - initial package for Fedora
