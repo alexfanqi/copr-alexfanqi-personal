@@ -1,12 +1,8 @@
 %global lockver 1
 %global pkgvers 0
-%global scdate0 20240204
-%global schash0 cd2a0518f4a7915a37c52aa8c6bf4a236573403e
-# lastest version that can be built with mlir-18
-# newer version has conflicts:
-# lib/Conversion/LLHDToLLVM/LLHDToLLVM.cpp:func.addEntryBlock(moduleBuilder)
-# lib/Dialect/Arc/Transforms/ArcCanonicalizer.cpp:void notifyOperationInserted(Operation *op, mlir::IRRewriter::InsertPoint) override
-%global sctags0 firtool-1.65.0
+%global scdate0 20240810
+%global schash0 bec0deab4bfa79785e3027bc95548435f58bd294
+%global sctags0 firtool-1.81.0
 %global source0 https://github.com/llvm/circt.git
 
 %define with_ortool 0
@@ -29,10 +25,10 @@ Patch3:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/
 BuildRequires:  cmake git gcc-c++ clang-tools-extra capnproto
 BuildRequires:  zlib-devel ncurses-devel z3-devel capnproto-devel
 BuildRequires:  libffi-devel
-BuildRequires:  python3-lit >= 18
+BuildRequires:  python3-lit >= 19
 %if ! %{unified_build}
-BuildRequires:  mlir-devel >= 18
-BuildRequires:  llvm-devel >= 18
+BuildRequires:  mlir-devel >= 19
+BuildRequires:  llvm-devel >= 19
 %endif
 %if %{with_python}
 BuildRequires:  python3-devel
@@ -46,6 +42,7 @@ BuildRequires:  or-tools-devel
 %endif
 Recommends: verilator iverilog yosys
 
+%global debug_package %{nil}
 %global __cmake_in_source_build 0
 
 %description
@@ -89,15 +86,15 @@ sed -i 's|message(FATAL_ERROR "CIRCT Python bindings|message(WARNING "CIRCT Pyth
 
 
 %build
-mkdir build
-pushd build
 %global optflags $(echo "%{optflags} -fpermissive")
 %global my_cmake_flags %{shrink:
-       -D CMAKE_SKIP_RPATH=ON
-       -D CMAKE_VERBOSE_MAKEFILE=OFF
-       -D CMAKE_BUILD_TYPE=RelWithDebInfo
-       -D LLVM_EXTERNAL_LIT=%{_bindir}/lit
-       -D CIRCT_BUILD_TOOLS=ON
+	-D ENABLE_LINKER_BUILD_ID:BOOL=ON
+	-D Python3_EXECUTABLE=%{__python3}
+	-D CMAKE_SKIP_RPATH=ON
+	-D CMAKE_VERBOSE_MAKEFILE=OFF
+	-D CMAKE_BUILD_TYPE=RelWithDebInfo
+	-D LLVM_EXTERNAL_LIT=%{_bindir}/lit
+	-D CIRCT_BUILD_TOOLS=ON
 }
 
 %if %{with_ortool}
@@ -107,7 +104,7 @@ pushd build
 %endif
 
 %if %{unified_build}
-%cmake -S ../llvm/llvm -Wno-dev \
+%cmake -S llvm/llvm -Wno-dev \
         %{my_cmake_flags} %{my_ortool_flags} \
        -D LLVM_ENABLE_PROJECTS=mlir \
        -D BUILD_SHARED_LIBS=OFF \
@@ -127,18 +124,14 @@ pushd build
        -D MLIR_ENABLE_BINDINGS_PYTHON=OFF
 %endif
 %else
-%cmake -S .. -Wno-dev \
+%cmake -Wno-dev \
         %{my_cmake_flags} %{my_ortool_flags}
 %endif
 %cmake_build
-popd
 
 
 %install
-# build
-pushd build
 %cmake_install
-popd
 
 
 %files
@@ -159,6 +152,8 @@ popd
 
 
 %changelog
+* Mon May 12 2025 Alex Fan <alex.fan.q@gmail.com>
+- bump to tag firtool 1.81.0
 * Tue Jul 30 2024 Alex Fan <alex.fan.q@gmail.com>
 - bump to tag firtool 1.65.0
 - migrate to unified build
