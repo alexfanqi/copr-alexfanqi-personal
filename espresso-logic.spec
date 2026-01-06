@@ -1,49 +1,47 @@
-%global pkgvers 1
-%global schash0 6d5fc9a38a0fd308cff86df20389ac5c45ea2640
-%global scdate0 20210807
-%global branch0 main
-%global source0 https://github.com/Gigantua/Espresso.git
-%global sshort0 %{expand:%%{lua:print(('%{schash0}'):sub(1,8))}}
-
 Name:           espresso-logic
-Version:        2.3
-Release:        %{scdate0}.%{pkgvers}.git%{sshort0}%{?dist}
-Summary:        The espresso PLA logic minimization program made C++20 Windows 10 compatible
-Group:          Development Tools
+Version:        2.4
+Release:        %autorelease
+Summary:        A tool to produce a minimal equivalent representation of a Boolean function
+Group:          Development/Tools
 
-License:        MIT
-URL:            https://github.com/Gigantua/Espresso
+# The original Berkeley code is typically BSD-style. 
+# Chipsalliance repo generally follows standard open source compatible licenses.
+License:        BSD
+URL:            https://github.com/chipsalliance/espresso/
+Source0:        %{url}/archive/v%{version}/espresso-%{version}.tar.gz
 
-Patch0:		https://raw.githubusercontent.com/alexfanqi/copr-alexfanqi-personal/master/espresso-strdup.patch
+BuildRequires:  gcc
+BuildRequires:  cmake
+BuildRequires:  make
 
-BuildRequires:  gcc git
-
-%global debug_package %{nil}
+# If this package replaces an older generic 'espresso' package
+Provides:       espresso = %{version}-%{release}
 
 %description
-Espresso heuristic logic minimizer made C++20 Windows 10 compatible - University of California, Berkeley.
+Espresso is a heuristic logic minimizer. It takes as input a two-level 
+representation of a two-valued or multiple-valued Boolean function 
+and produces a minimal equivalent representation.
 
 %prep
-git clone --depth 1 -n -b %{branch0} %{source0} .
-git fetch --depth 1 origin %{schash0}
-git reset --hard %{schash0}
-git log --format=fuller
-
-%patch 0 -p1
+%autosetup -n espresso-%{version}
 
 %build
-%make_build -C ./src
+export CFLAGS="%{optflags} -std=c99"
+
+%cmake
+%cmake_build
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-install -m 0755 "./bin/espresso" %{buildroot}%{_bindir}/
+%cmake_install
+
+%check
+%ctest
 
 %files
-%{_bindir}/*
-%license LICENSE
-%doc README.md
-
+%{_bindir}/espresso
+%{_mandir}/man1/espresso.1*
+%{_mandir}/man5/espresso.5*
 
 %changelog
-* Mon Jul 01 2024 Alex Fan <alex.fan.q@gmail.com>
-- initial import
+* Tue Jan 06 2026 Alex Fan <alex.fan.q@gmail.com> - 2.4-1
+- Update to version 2.4 based on chipsalliance upstream
