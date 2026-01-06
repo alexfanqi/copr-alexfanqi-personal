@@ -1,7 +1,7 @@
 %global lockver 1
 %global pkgvers 0
 %global scdate0 20250208
-%global schash0 aa580c2ec5eb4217c945a47a561181be7e7b1032
+%global schash0 020bfc4763748398bfbca709ee3de20ab0a84e67
 %global sctags0 firtool-1.105.0
 %global source0 https://github.com/llvm/circt.git
 
@@ -21,6 +21,7 @@ Patch0:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/
 Patch1:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-install-dir.patch
 Patch2:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-mlir-tblgen-path.patch
 Patch3:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-lookupOrCreateFn-llvm-20.1.patch
+Patch4:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-lsp-server-no-lto.patch
 
 BuildRequires:  cmake git gcc-c++ clang-tools-extra capnproto
 BuildRequires:  zlib-devel ncurses-devel z3-devel capnproto-devel
@@ -79,6 +80,7 @@ git submodule update
 %patch -P 1 -p1
 %patch -P 2 -p1
 %patch -P 3 -p1
+%patch -P 4 -p1
 %autosetup -D -N -T -c -n %{name}
 %endif
 # python

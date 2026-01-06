@@ -1,0 +1,13 @@
+diff --git a/tools/circt-lsp-server/CMakeLists.txt b/tools/circt-lsp-server/CMakeLists.txt
+index 5afbbcfc3..a7d6ace26 100644
+--- a/tools/circt-lsp-server/CMakeLists.txt
++++ b/tools/circt-lsp-server/CMakeLists.txt
+@@ -49,6 +49,8 @@ add_circt_tool(circt-lsp-server
+   ${LIBS}
+   )
+ target_link_libraries(circt-lsp-server PRIVATE ${LIBS})
++target_compile_options(circt-lsp-server PRIVATE -fno-lto)
++target_link_options(circt-lsp-server PRIVATE -fno-lto)
+ llvm_update_compile_flags(circt-lsp-server)
+ 
+ mlir_check_all_link_libraries(circt-lsp-server)
