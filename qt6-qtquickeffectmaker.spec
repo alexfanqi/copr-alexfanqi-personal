@@ -9,7 +9,7 @@
 
 Summary: Qt6 - Quick EffectMaker Tool 
 Name:    qt6-%{qt_module}
-Version: 6.8.3
+Version: 6.9.3
 Release: %autorelease
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
@@ -95,6 +95,9 @@ popd
 
 
 %changelog
+* Tue Jan 06 2026 Alex Fan <alex.fan.q@gmail.com> - 6.9.3-1
+- 6.9.3
+
 * Thu Mar 06 2025 Alex Fan <alex.fan.q@gmail.com> - 6.8.2-1
 - 6.8.2
 - migrate to SPDX license
