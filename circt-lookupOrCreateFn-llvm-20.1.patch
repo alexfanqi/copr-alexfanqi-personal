@@ -1,0 +1,245 @@
+From 3df3bb5887993d7dff1aa7adc04dc7fc7d29a5f6 Mon Sep 17 00:00:00 2001
+From: Mike Urbach <mikeurbach@gmail.com>
+Date: Thu, 13 Feb 2025 14:32:11 -0700
+Subject: [PATCH] Bump LLVM to 289b17635958d986b74683c932df6b1d12f37b70.
+ (#8225)
+
+This picked up a few breaking changes.
+
+https://github.com/llvm/llvm-project/commit/327d6270
+
+This added new required methods to CallOpInterface and
+CallableOpInterface. These methods are related to arrays of dictionary
+attributes for each argument and result, and are normally implemented
+upstream by simply defining the right arg_attrs and res_attrs
+arguments on the operations. This allows some of the common utilities
+upstream to work with the attributes.
+
+However, we seem to have actually moved away from arrays of
+per-argument or per-result attributes in most cases, and handle this
+ourselves when we want to. I opted to stub out the methods in the
+tablegen definitions of our operations, rather than adding optional
+attributes and setting them to null in builders and builder callsites
+like was done upstream.
+
+There were also some accompanying name changes to a couple helper
+functions, which we were able to simply apply without needing to add
+new optional attributes everywhere.
+
+https://github.com/llvm/llvm-project/commit/e84f6b6a
+
+This updated several LLVM dialect helper functions related to
+lookupOrCreateFn to return FailureOr<LLVM::LLVMFuncOp>. In most cases,
+we simply check for the error case and return it or signal pass
+failure. There was one function in the SMT to Z3 conversion that
+assumes this always succeeds and in this function I made an assertion
+rather than changing the function to also potentially return failure.
+
+https://github.com/llvm/llvm-project/commit/f4e3b878
+
+Looks like upstream is simply moving from undef to poison in many
+cases, so this required us to update one test case.
+---
+ include/circt/Dialect/Arc/ArcOps.td           | 30 +++++++++++++++++++
+ .../circt/Dialect/Handshake/HandshakeOps.td   | 19 ++++++++++++
+ include/circt/Dialect/Kanagawa/KanagawaOps.td | 10 +++++++
+ include/circt/Dialect/SV/SVStatements.td      | 20 +++++++++++++
+ include/circt/Dialect/Sim/SimOps.td           | 20 +++++++++++++
+ .../Dialect/SystemC/SystemCStatements.td      | 18 +++++++++++
+ integration_test/CMakeLists.txt               |  2 +-
+ integration_test/Dialect/SMT/basic.mlir       |  6 ++--
+ integration_test/lit.cfg.py                   |  6 ++--
+ lib/Conversion/ArcToLLVM/LowerArcToLLVM.cpp   | 23 +++++++++-----
+ .../SMTToZ3LLVM/LowerSMTToZ3LLVM.cpp          |  8 +++--
+ lib/Dialect/FSM/FSMOps.cpp                    |  2 +-
+ lib/Dialect/Handshake/HandshakeOps.cpp        |  4 +--
+ lib/Dialect/SystemC/SystemCOps.cpp            |  8 ++---
+ lib/Tools/circt-bmc/LowerToBMC.cpp            |  7 ++++-
+ lib/Tools/circt-lec/ConstructLEC.cpp          |  7 ++++-
+ llvm                                          |  2 +-
+ .../ArcToLLVM/lower-arc-to-llvm.mlir          |  2 +-
+ 18 files changed, 165 insertions(+), 29 deletions(-)
+
+diff --git a/integration_test/CMakeLists.txt b/integration_test/CMakeLists.txt
+index 341dc218632b..2a3037100413 100644
+--- a/integration_test/CMakeLists.txt
++++ b/integration_test/CMakeLists.txt
+@@ -19,7 +19,7 @@ set(CIRCT_INTEGRATION_TEST_DEPENDS
+   )
+ 
+ if (MLIR_ENABLE_EXECUTION_ENGINE)
+-  list(APPEND CIRCT_INTEGRATION_TEST_DEPENDS mlir-cpu-runner)
++  list(APPEND CIRCT_INTEGRATION_TEST_DEPENDS mlir-runner)
+ endif()
+ 
+ # If Python bindings are available to build then enable the tests.
+diff --git a/integration_test/Dialect/SMT/basic.mlir b/integration_test/Dialect/SMT/basic.mlir
+index 496e09e4ec3c..96fad9464918 100644
+--- a/integration_test/Dialect/SMT/basic.mlir
++++ b/integration_test/Dialect/SMT/basic.mlir
+@@ -1,13 +1,13 @@
+ // RUN: circt-opt %s --lower-smt-to-z3-llvm --canonicalize | \
+-// RUN: mlir-cpu-runner -e entry -entry-point-result=void --shared-libs=%libz3 | \
++// RUN: mlir-runner -e entry -entry-point-result=void --shared-libs=%libz3 | \
+ // RUN: FileCheck %s
+ 
+ // RUN: circt-opt %s --lower-smt-to-z3-llvm=debug=true --canonicalize | \
+-// RUN: mlir-cpu-runner -e entry -entry-point-result=void --shared-libs=%libz3 | \
++// RUN: mlir-runner -e entry -entry-point-result=void --shared-libs=%libz3 | \
+ // RUN: FileCheck %s
+ 
+ // REQUIRES: libz3
+-// REQUIRES: mlir-cpu-runner
++// REQUIRES: mlir-runner
+ 
+ func.func @entry() {
+   %false = llvm.mlir.constant(0 : i1) : i1
+diff --git a/integration_test/lit.cfg.py b/integration_test/lit.cfg.py
+index e1500df039b4..7b4cae00964a 100644
+--- a/integration_test/lit.cfg.py
++++ b/integration_test/lit.cfg.py
+@@ -217,12 +217,12 @@
+   tools.append(ToolSubst(f"%libz3", config.z3_library))
+   config.available_features.add('libz3')
+ 
+-# Add mlir-cpu-runner if the execution engine is built.
++# Add mlir-runner if the execution engine is built.
+ if config.mlir_enable_execution_engine:
+-  config.available_features.add('mlir-cpu-runner')
++  config.available_features.add('mlir-runner')
+   config.available_features.add('circt-lec-jit')
+   config.available_features.add('circt-bmc-jit')
+-  tools.append('mlir-cpu-runner')
++  tools.append('mlir-runner')
+ 
+ # Add circt-verilog if the Slang frontend is enabled.
+ if config.slang_frontend_enabled:
+diff --git a/lib/Conversion/ArcToLLVM/LowerArcToLLVM.cpp b/lib/Conversion/ArcToLLVM/LowerArcToLLVM.cpp
+index 8d8f80c17941..5bc5c261fcd2 100644
+--- a/lib/Conversion/ArcToLLVM/LowerArcToLLVM.cpp
++++ b/lib/Conversion/ArcToLLVM/LowerArcToLLVM.cpp
+@@ -381,17 +381,22 @@ struct SimInstantiateOpLowering
+     // sizeof(size_t) on the target architecture.
+     Type convertedIndex = typeConverter->convertType(rewriter.getIndexType());
+ 
+-    LLVM::LLVMFuncOp mallocFunc =
++    FailureOr<LLVM::LLVMFuncOp> mallocFunc =
+         LLVM::lookupOrCreateMallocFn(moduleOp, convertedIndex);
+-    LLVM::LLVMFuncOp freeFunc = LLVM::lookupOrCreateFreeFn(moduleOp);
++    if (failed(mallocFunc))
++      return mallocFunc;
++
++    FailureOr<LLVM::LLVMFuncOp> freeFunc = LLVM::lookupOrCreateFreeFn(moduleOp);
++    if (failed(freeFunc))
++      return freeFunc;
+ 
+     Location loc = op.getLoc();
+     Value numStateBytes = rewriter.create<LLVM::ConstantOp>(
+         loc, convertedIndex, model.numStateBytes);
+-    Value allocated =
+-        rewriter
+-            .create<LLVM::CallOp>(loc, mallocFunc, ValueRange{numStateBytes})
+-            .getResult();
++    Value allocated = rewriter
++                          .create<LLVM::CallOp>(loc, mallocFunc.value(),
++                                                ValueRange{numStateBytes})
++                          .getResult();
+     Value zero =
+         rewriter.create<LLVM::ConstantOp>(loc, rewriter.getI8Type(), 0);
+     rewriter.create<LLVM::MemsetOp>(loc, allocated, zero, numStateBytes, false);
+@@ -418,7 +423,7 @@ struct SimInstantiateOpLowering
+                                     ValueRange{allocated});
+     }
+ 
+-    rewriter.create<LLVM::CallOp>(loc, freeFunc, ValueRange{allocated});
++    rewriter.create<LLVM::CallOp>(loc, freeFunc.value(), ValueRange{allocated});
+     rewriter.eraseOp(op);
+ 
+     return success();
+@@ -550,6 +555,8 @@ struct SimEmitValueOpLowering
+     auto printfFunc = LLVM::lookupOrCreateFn(
+         moduleOp, "printf", LLVM::LLVMPointerType::get(getContext()),
+         LLVM::LLVMVoidType::get(getContext()), true);
++    if (failed(printfFunc))
++      return printfFunc;
+ 
+     // Insert the format string if not already available.
+     SmallString<16> formatStrName{"_arc_sim_emit_"};
+@@ -580,7 +587,7 @@ struct SimEmitValueOpLowering
+     Value formatStrGlobalPtr =
+         rewriter.create<LLVM::AddressOfOp>(loc, formatStrGlobal);
+     rewriter.replaceOpWithNewOp<LLVM::CallOp>(
+-        op, printfFunc, ValueRange{formatStrGlobalPtr, toPrint});
++        op, printfFunc.value(), ValueRange{formatStrGlobalPtr, toPrint});
+ 
+     return success();
+   }
+diff --git a/lib/Conversion/SMTToZ3LLVM/LowerSMTToZ3LLVM.cpp b/lib/Conversion/SMTToZ3LLVM/LowerSMTToZ3LLVM.cpp
+index 07a7b0d731ee..d1a9fa0a51d2 100644
+--- a/lib/Conversion/SMTToZ3LLVM/LowerSMTToZ3LLVM.cpp
++++ b/lib/Conversion/SMTToZ3LLVM/LowerSMTToZ3LLVM.cpp
+@@ -149,9 +149,11 @@ class SMTLoweringPattern : public OpConversionPattern<OpTy> {
+       auto module =
+           builder.getBlock()->getParent()->getParentOfType<ModuleOp>();
+       builder.setInsertionPointToEnd(module.getBody());
+-      funcOp = LLVM::lookupOrCreateFn(module, name, funcType.getParams(),
+-                                      funcType.getReturnType(),
+-                                      funcType.getVarArg());
++      auto funcOpResult = LLVM::lookupOrCreateFn(
++          module, name, funcType.getParams(), funcType.getReturnType(),
++          funcType.getVarArg());
++      assert(succeeded(funcOpResult) && "expected to lookup or create printf");
++      funcOp = funcOpResult.value();
+     }
+     return builder.create<LLVM::CallOp>(loc, funcOp, args);
+   }
+diff --git a/lib/Tools/circt-bmc/LowerToBMC.cpp b/lib/Tools/circt-bmc/LowerToBMC.cpp
+index ddf5d970d7a5..4b9b04155bb6 100644
+--- a/lib/Tools/circt-bmc/LowerToBMC.cpp
++++ b/lib/Tools/circt-bmc/LowerToBMC.cpp
+@@ -77,6 +77,10 @@ void LowerToBMCPass::runOnOperation() {
+   // Lookup or declare printf function.
+   auto printfFunc =
+       LLVM::lookupOrCreateFn(moduleOp, "printf", ptrTy, voidTy, true);
++  if (failed(printfFunc)) {
++    moduleOp->emitError("failed to lookup or create printf");
++    return signalPassFailure();
++  }
+ 
+   // Replace the top-module with a function performing the BMC
+   auto entryFunc = builder.create<func::FuncOp>(
+@@ -203,7 +207,8 @@ void LowerToBMCPass::runOnOperation() {
+ 
+   auto formatString = builder.create<LLVM::SelectOp>(
+       loc, bmcOp.getResult(), successStrAddr.value(), failureStrAddr.value());
+-  builder.create<LLVM::CallOp>(loc, printfFunc, ValueRange{formatString});
++  builder.create<LLVM::CallOp>(loc, printfFunc.value(),
++                               ValueRange{formatString});
+   builder.create<func::ReturnOp>(loc);
+ 
+   if (insertMainFunc) {
+diff --git a/lib/Tools/circt-lec/ConstructLEC.cpp b/lib/Tools/circt-lec/ConstructLEC.cpp
+index d4f50df53167..a44f9949f701 100644
+--- a/lib/Tools/circt-lec/ConstructLEC.cpp
++++ b/lib/Tools/circt-lec/ConstructLEC.cpp
+@@ -75,6 +75,10 @@ void ConstructLECPass::runOnOperation() {
+   // Lookup or declare printf function.
+   auto printfFunc =
+       LLVM::lookupOrCreateFn(getOperation(), "printf", ptrTy, voidTy, true);
++  if (failed(printfFunc)) {
++    getOperation()->emitError("failed to lookup or create printf");
++    return signalPassFailure();
++  }
+ 
+   // Lookup the modules.
+   auto moduleA = lookupModule(firstModule);
+@@ -144,7 +148,8 @@ void ConstructLECPass::runOnOperation() {
+       lookupOrCreateStringGlobal(builder, getOperation(), "c1 != c2\n");
+   Value formatString = builder.create<LLVM::SelectOp>(
+       loc, areEquivalent, eqFormatString, neqFormatString);
+-  builder.create<LLVM::CallOp>(loc, printfFunc, ValueRange{formatString});
++  builder.create<LLVM::CallOp>(loc, printfFunc.value(),
++                               ValueRange{formatString});
+ 
+   builder.create<func::ReturnOp>(loc, ValueRange{});
+ }

@@ -1,8 +1,8 @@
 %global lockver 1
 %global pkgvers 0
-%global scdate0 20240810
-%global schash0 bec0deab4bfa79785e3027bc95548435f58bd294
-%global sctags0 firtool-1.81.0
+%global scdate0 20250208
+%global schash0 aa580c2ec5eb4217c945a47a561181be7e7b1032
+%global sctags0 firtool-1.105.0
 %global source0 https://github.com/llvm/circt.git
 
 %define with_ortool 0
@@ -20,15 +20,15 @@ URL:            https://circt.llvm.org
 Patch0:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-hack-mlir-linalg-ods-yaml-gen.patch
 Patch1:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-install-dir.patch
 Patch2:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-mlir-tblgen-path.patch
-Patch3:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-skip-integration-test.patch
+Patch3:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-lookupOrCreateFn-llvm-20.1.patch
 
 BuildRequires:  cmake git gcc-c++ clang-tools-extra capnproto
 BuildRequires:  zlib-devel ncurses-devel z3-devel capnproto-devel
 BuildRequires:  libffi-devel
-BuildRequires:  python3-lit >= 19
+BuildRequires:  python3-lit >= 20
 %if ! %{unified_build}
-BuildRequires:  mlir-devel >= 19
-BuildRequires:  llvm-devel >= 19
+BuildRequires:  mlir-devel >= 20
+BuildRequires:  llvm-devel >= 20
 %endif
 %if %{with_python}
 BuildRequires:  python3-devel
@@ -95,6 +95,7 @@ sed -i 's|message(FATAL_ERROR "CIRCT Python bindings|message(WARNING "CIRCT Pyth
 	-D CMAKE_BUILD_TYPE=RelWithDebInfo
 	-D LLVM_EXTERNAL_LIT=%{_bindir}/lit
 	-D CIRCT_BUILD_TOOLS=ON
+	-D CIRCT_INCLUDE_TESTS=OFF
 }
 
 %if %{with_ortool}
@@ -152,11 +153,17 @@ sed -i 's|message(FATAL_ERROR "CIRCT Python bindings|message(WARNING "CIRCT Pyth
 
 
 %changelog
+* Tue Jan 06 2026 Alex Fan <alex.fan.q@gmail.com>
+- bump to tag firtool 1.105.0
+
 * Mon May 12 2025 Alex Fan <alex.fan.q@gmail.com>
 - bump to tag firtool 1.81.0
+
 * Tue Jul 30 2024 Alex Fan <alex.fan.q@gmail.com>
 - bump to tag firtool 1.65.0
 - migrate to unified build
 - enable building python binding, still broken
+
 * Wed Jul 12 2023 Balint Cristian <cristian.balint@gmail.com>
 - github update releases
+
