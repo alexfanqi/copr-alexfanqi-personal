@@ -12,7 +12,7 @@
 #
 
 Name:           %{pkg_name}
-Version:        2024.07
+Version:        2025.07
 Release:        %autorelease
 Summary:        Compiler, simulator, and tools for the Bluespec Hardware Description Language
 
@@ -130,6 +130,9 @@ cp -r util/vim/{ftdetect,indent,syntax} %{buildroot}%{vimfiles_root}
 
 
 %changelog
+* Tue Jan 06 2026 Alex Fan <alex.fan.q@gmail.com> - 2025.07
+- bump to 2025.07
+
 * Thu Mar 07 2025 Alex Fan <alex.fan.q@gmail.com> - 2024.07
 - bump to 2024.07
 
