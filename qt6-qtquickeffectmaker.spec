@@ -9,7 +9,7 @@
 
 Summary: Qt6 - Quick EffectMaker Tool 
 Name:    qt6-%{qt_module}
-Version: 6.9.3
+Version: 6.10.2
 Release: %autorelease
 
 # See LICENSE.GPL LICENSE.LGPL LGPL_EXCEPTION.txt, for details
