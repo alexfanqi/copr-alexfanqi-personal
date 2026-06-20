@@ -1,8 +1,8 @@
 %global lockver 1
 %global pkgvers 0
-%global scdate0 20250208
-%global schash0 020bfc4763748398bfbca709ee3de20ab0a84e67
-%global sctags0 firtool-1.105.0
+%global scdate0 20250725
+%global schash0 5e2e73845c4d1947d5e72a2457d2ca3da2f96015
+%global sctags0 firtool-1.126.0
 %global source0 https://github.com/llvm/circt.git
 
 %define with_ortool 0
@@ -20,16 +20,14 @@ URL:            https://circt.llvm.org
 Patch0:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-hack-mlir-linalg-ods-yaml-gen.patch
 Patch1:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-install-dir.patch
 Patch2:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-mlir-tblgen-path.patch
-Patch3:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-lookupOrCreateFn-llvm-20.1.patch
-Patch4:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-lsp-server-no-lto.patch
 
 BuildRequires:  cmake git gcc-c++ clang-tools-extra capnproto
 BuildRequires:  zlib-devel ncurses-devel z3-devel capnproto-devel
 BuildRequires:  libffi-devel
-BuildRequires:  python3-lit >= 20
+BuildRequires:  python3-lit >= 21
 %if ! %{unified_build}
-BuildRequires:  mlir-devel >= 20
-BuildRequires:  llvm-devel >= 20
+BuildRequires:  mlir-devel >= 21
+BuildRequires:  llvm-devel >= 21
 %endif
 %if %{with_python}
 BuildRequires:  python3-devel
@@ -155,6 +153,9 @@ sed -i 's|message(FATAL_ERROR "CIRCT Python bindings|message(WARNING "CIRCT Pyth
 
 
 %changelog
+* Sun Jun 21 2026 Alex Fan <alex.fan.q@gmail.com>
+- bump to tag firtool 1.126.0
+
 * Tue Jan 06 2026 Alex Fan <alex.fan.q@gmail.com>
 - bump to tag firtool 1.105.0
 
