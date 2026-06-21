@@ -17,9 +17,9 @@ License:        Apache 2.0
 
 URL:            https://circt.llvm.org
 # hack to work around https://github.com/llvm/llvm-project/issues/68546
-Patch0:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-hack-mlir-linalg-ods-yaml-gen.patch
-Patch1:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-install-dir.patch
-Patch2:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-mlir-tblgen-path.patch
+Patch0:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-install-dir.patch
+Patch1:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-mlir-tblgen-path.patch
+Patch2:         https://github.com/alexfanqi/copr-alexfanqi-personal/raw/master/circt-lsp-server-no-lto.patch
 
 BuildRequires:  cmake git gcc-c++ clang-tools-extra capnproto
 BuildRequires:  zlib-devel ncurses-devel z3-devel capnproto-devel
@@ -75,10 +75,9 @@ git submodule init .
 git submodule update
 %autosetup -D -p 1 -T -c -n %{name}
 %else
+%patch -P 0 -p1
 %patch -P 1 -p1
 %patch -P 2 -p1
-%patch -P 3 -p1
-%patch -P 4 -p1
 %autosetup -D -N -T -c -n %{name}
 %endif
 # python
